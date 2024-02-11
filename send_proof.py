@@ -23,7 +23,7 @@ async def get_wallet(client):
 
 
 async def main():
-    client = LiteClient.from_mainnet_config(5, 2)
+    client = MyLiteClient.from_mainnet_config(5, 2)
     await client.connect()
     addr = Address('Uf_BvG8IeNYQFsOQ8Z5WqhcFLAcjZP_rvx-5_y32IyIYkJWz')
     block_proof, state_proof, account_state, block = await client.get_account_proof(addr)
