@@ -21,7 +21,7 @@ const int ERROR:INVALID_SHARD_PROOF = 1007;
 
 
 
-int check_that_block_exists(int block_root_hash) inline {
+int check_that_block_exists(int block_root_hash) impure inline {
     tuple prev_mc_blocks = get_prev_mc_blocks();
     int len = prev_mc_blocks.tlen();
     int i = 0;
@@ -36,7 +36,7 @@ int check_that_block_exists(int block_root_hash) inline {
 }
 
 
-int check_merkle_proof_valid(slice cs, int exotic?, int hash) inline_ref {
+int check_merkle_proof_valid(slice cs, int exotic?, int hash) impure inline_ref {
     ;;; ####### MERKLE PROOF VALIDATION #######
     ifnot (exotic?) {
         return 0;
@@ -51,7 +51,7 @@ int check_merkle_proof_valid(slice cs, int exotic?, int hash) inline_ref {
 }
 
 
-int check_merkle_update_valid_return_new_hash(slice cs, int exotic?) inline_ref {
+int check_merkle_update_valid_return_new_hash(slice cs, int exotic?) impure inline_ref {
     ;;; ####### MERKLE UPDATE VALIDATION #######
     ifnot (exotic?) {
         return 0;
@@ -65,7 +65,7 @@ int check_merkle_update_valid_return_new_hash(slice cs, int exotic?) inline_ref 
 
 
 
-int check_block_header_proof(cell proof_cell, int block_root_hash, int return_state_hash) inline_ref {
+int check_block_header_proof(cell proof_cell, int block_root_hash, int return_state_hash) impure inline_ref {
     var (ps, exotic?) = proof_cell.begin_parse_exotic();
     throw_unless(ERROR:INVALID_MERKLE_PROOF, check_merkle_proof_valid(ps, exotic?, block_root_hash));
     if (return_state_hash) {
@@ -82,7 +82,7 @@ int check_block_header_proof(cell proof_cell, int block_root_hash, int return_st
 }
 
 
-slice find_shard_in_bintree(cell c) inline {
+slice find_shard_in_bintree(cell c) impure inline {
     var (ps, exotic?) = c.begin_parse_exotic();
     if (exotic?) {
         throw_unless(ERROR:PRUNED_BRANCH_EXPECTED, ps~load_uint(8) == 1);
@@ -113,8 +113,8 @@ slice find_shard_in_bintree(cell c) inline {
     psl~load_ref(); ;; accounts
     psl~load_ref(); ;; state
     slice custom = psl~load_ref().begin_parse();
-    cell shards_hashes_dict = custom~load_dict();
-    (slice shard_descr_bin_tree, var found?) = shards_hashes_dict.udict_get?(32, shard_wc);
+    cell shards_hashes_dict = custom~load_ref();
+    (slice shard_descr_bin_tree, var found?) = shards_hashes_dict.idict_get?(32, shard_wc);
     throw_unless(ERROR:SHARD_NOT_FOUND, found?);
     slice shard_descr = find_shard_in_bintree(begin_cell().store_slice(shard_descr_bin_tree).end_cell());
     throw_unless(ERROR:SHARD_NOT_FOUND_IN_BINTREE, shard_descr.null?());
